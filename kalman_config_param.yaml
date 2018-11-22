@@ -1,0 +1,37 @@
+{
+  #Q prosess noise variance on diagonal, assume no covariance
+  prosess_variance_x: 0.1,
+  prosess_variance_y: 0.1, 
+  prosess_variance_z: 0.1, 
+  prosess_variance_x_dot: 0.1, 
+  prosess_variance_y_dot: 0.1, 
+  prosess_variance_z_dot: 0.1,
+  #R observation noise variance on diagonal, assume no covariance
+  observation_variance_x: 0.1,
+  observation_variance_y: 0.1,
+  observation_variance_z: 0.1, 
+  observation_variance_x_dot: 0.1,
+  observation_variance_y_dot: 0.1,
+  observation_variance_z_dot: 0.1,
+  #Initial error variance 
+  error_variance_x: 0.1, 
+  error_variance_y: 0.1, 
+  error_variance_z: 0.1, 
+  error_variance_x_dot: 0.1, 
+  error_variance_y_dot: 0.1, 
+  error_variance_z_dot: 0.1, 
+  #Prediction frequency
+  prediction_freq: 30,
+  #Inital posistion and velocity
+  init_x: 0.0,
+  init_y: 0.0, 
+  init_z: 0.0, 
+  init_x_dot: 0.0, 
+  init_y_dot: 0.0, 
+  init_z_dot: 0.0, 
+  
+
+  
+
+
+}
