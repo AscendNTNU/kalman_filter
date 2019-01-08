@@ -10,12 +10,6 @@ int main(int argc, char **argv){
 
 	ros::Publisher pub = n.advertise<geometry_msgs::PoseStamped>("/measurement/pose", 100);
 
-	float test; 
-
-	std::cout << "How did it go? " << n.getParam("/measurement_publisher/param", test) << std::endl;
-
-	std::cout << "Test: " << test << std::endl; 
-
 	ros::Rate loop_rate(30);
 	geometry_msgs::PoseStamped measurement;
 

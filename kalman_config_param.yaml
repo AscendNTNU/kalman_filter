@@ -1,6 +1,6 @@
 {
-  #Q prosess noise variance on diagonal, assume no covariance
-  prosess_variance_x: 0.1,
+  #Q prosess noise variance on diagonal, assume no covariance || diagonal matrix
+  prosess_variance_x: 0.01,
   prosess_variance_y: 0.1, 
   prosess_variance_z: 0.1, 
   prosess_variance_x_dot: 0.1, 
@@ -29,7 +29,10 @@
   init_x_dot: 0.0, 
   init_y_dot: 0.0, 
   init_z_dot: 0.0, 
-  
+  #Observation matrix (x,y,z) only measure x position! 
+  observation_x: 1,
+  observation_y: 0,
+  observation_z: 0,  
 
   
 

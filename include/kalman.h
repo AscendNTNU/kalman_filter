@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <geometry_msgs/PoseStamped.h>
+#include <ros/ros.h>
 
 
 using namespace Eigen; 
@@ -13,7 +14,8 @@ public:
 	Kalman();
 	void printVector();
 	void prediction(); //Callback? 
-	void correction(const geometry_msgs::PoseStamped& input); //Callback!
+	void correction(const geometry_msgs::PoseStamped& input); //Callback
+	void publish(); 
 	
 private:
 	//State estimation 
@@ -24,6 +26,10 @@ private:
 	//Correction
 	Matrix<float, 6, 1> X_posteriori, Y_k, Z_k; // Corrected state estimate || difference between measurement and prediction || measurement
 	Matrix<float,6,6>  K_k, H_k, R_k, S_k, P_posteriori; //Kalman gian || Observation model || Covariance of observation noise || Rest-covariance || Post covariance of state variables
+
+	//Publisher! 
+	ros::Publisher pub; 
+	geometry_msgs::PoseStamped estimate;
 };
 
 #endif
