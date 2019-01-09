@@ -14,13 +14,11 @@ Kalman::Kalman(){
 	float stepSize = 1.0/freq; 
 
 	X_priori.setZero();   
-
+	Z_k.setZero(); 
 	F_k.setZero();
 	F_k(0,3) = 1.0*stepSize;
 	F_k(1,4) = 1.0*stepSize; 
 	F_k(2,5) = 1.0*stepSize; 
-	std::cout << "F_k: \n " << F_k << std::endl; 
-
 	H_k.setZero();
 	Q_k.setZero();
 	R_k.setZero();  
@@ -50,12 +48,13 @@ Kalman::Kalman(){
 	n.getParam("/kalman_filter/observation_variance_y_dot", R_k(4,4)); 
 	n.getParam("/kalman_filter/observation_variance_z_dot", R_k(5,5)); 
 	//Setting the inital state of the system
-	n.getParam("/kalman_filter/init_x", X_posteriori(0,0)); 
-	n.getParam("/kalman_filter/init_y", X_posteriori(1,1)); 
-	n.getParam("/kalman_filter/init_z", X_posteriori(2,2)); 
-	n.getParam("/kalman_filter/init_x_dot", X_posteriori(3,3)); 
-	n.getParam("/kalman_filter/init_y_dot", X_posteriori(4,4)); 
-	n.getParam("/kalman_filter/init_z_dot", X_posteriori(5,5)); 
+
+	n.getParam("/kalman_filter/init_x", X_posteriori(0)); 
+	n.getParam("/kalman_filter/init_y", X_posteriori(1)); 
+	n.getParam("/kalman_filter/init_z", X_posteriori(2)); 
+	n.getParam("/kalman_filter/init_x_dot", X_posteriori(3)); 
+	n.getParam("/kalman_filter/init_y_dot", X_posteriori(4)); 
+	n.getParam("/kalman_filter/init_z_dot", X_posteriori(5)); 
 	//Setting which states that are measured
 	n.getParam("/kalman_filter/observation_x", H_k(0,0));
 	n.getParam("/kalman_filter/observation_y", H_k(1,1));
@@ -80,10 +79,10 @@ void Kalman::prediction(){
 
 void Kalman::correction(const geometry_msgs::PoseStamped& input){
 
+	Z_k << input.pose.position.x, input.pose.position.y, input.pose.position.z, 0, 0 ,0; //Put the measurement into a vector
 
-	std::cout << "Receiving data" << std::endl; 
+	std::cout << "Z_k " << Z_k << std::endl; 
 
-	Z_k << input.pose.position.x, input.pose.position.y, input.pose.position.z; //Put the measurement into a vector
 
 	Y_k = Z_k - H_k*X_priori; 
 	//std::cout << "Y_k: " << Y_k << std::endl;
