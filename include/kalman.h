@@ -12,7 +12,7 @@ class Kalman{
 
 public:
 	Kalman();
-	void printVector();
+	void printSystem();
 	void prediction(); //Callback? 
 	void correction(const geometry_msgs::PoseStamped& input); //Callback
 	void publish(); 
@@ -24,8 +24,13 @@ private:
 	// Pre covariance of state variables || Idenity matrix
 
 	//Correction
-	Matrix<float, 6, 1> X_posteriori, Y_k, Z_k; // Corrected state estimate || difference between measurement and prediction || measurement
+	Matrix<float, 6, 1> X_posteriori, Y_k, Z_k, Z_last; // Corrected state estimate || difference between measurement and prediction || measurement
 	Matrix<float,6,6>  K_k, H_k, R_k, S_k, P_posteriori; //Kalman gian || Observation model || Covariance of observation noise || Rest-covariance || Post covariance of state variables
+
+
+	//First iteration 
+	bool first_iteration; 
+	ros::Time last_measurement_time; 
 
 	//Publisher! 
 	ros::Publisher pub; 

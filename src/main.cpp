@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     std::cout << "Freq: " << frequency << " Hz" << std::endl; 
     Kalman filter; 
 
-    filter.printVector(); 
+    filter.printSystem(); 
 
     ros::Subscriber sub = n.subscribe("/measurement/pose", 1, &Kalman::correction, &filter); 
 

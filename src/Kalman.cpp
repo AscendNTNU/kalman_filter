@@ -13,9 +13,12 @@ Kalman::Kalman(){
 	n.getParam("/kalman_filter/prediction_freq", freq); 
 	float stepSize = 1.0/freq; 
 
+	first_iteration = true; 
+
 	X_priori.setZero();   
-	Z_k.setZero(); 
-	F_k.setZero();
+	Z_k.setZero();
+	Z_last.setZero(); //?
+	F_k.setIdentity();
 	F_k(0,3) = 1.0*stepSize;
 	F_k(1,4) = 1.0*stepSize; 
 	F_k(2,5) = 1.0*stepSize; 
@@ -59,48 +62,71 @@ Kalman::Kalman(){
 	n.getParam("/kalman_filter/observation_x", H_k(0,0));
 	n.getParam("/kalman_filter/observation_y", H_k(1,1));
 	n.getParam("/kalman_filter/observation_z", H_k(2,2));
-	std::cout << "H_k \n" << H_k << std::endl; 
+
+	n.getParam("/kalman_filter/observation_x_vel", H_k(3,3)); 
 };
 
 
-void Kalman::printVector(){	
+void Kalman::printSystem(){	
+
+	std::cout << "F_k" << std::endl; 
+	std::cout << F_k << std::endl; 
+	std::cout << "B_k" << std::endl; 
+	std::cout << B_k << std::endl; 
+	std::cout << "P_posteriori" << std::endl; 
 	std::cout << P_posteriori << std::endl; 
+	std::cout << " Q_k " << std::endl; 
 	std::cout << Q_k << std::endl; 
+	std::cout << "R_k" << std::endl; 
 	std::cout << R_k << std::endl; 
+	std::cout << "Initial states" << std::endl; 
 	std::cout << X_posteriori << std::endl; 
 };
 
 
 void Kalman::prediction(){
-	X_priori =X_posteriori + F_k*X_posteriori; // + B_k U 
-	//std::cout << "X_priori" <<  X_priori << std::endl; 
+	X_priori = F_k*X_posteriori; // + B_k U 
 	P_priori = F_k*P_posteriori*F_k.transpose() + Q_k; 
 }
 
 void Kalman::correction(const geometry_msgs::PoseStamped& input){
-
+	
 	Z_k << input.pose.position.x, input.pose.position.y, input.pose.position.z, 0, 0 ,0; //Put the measurement into a vector
+	
+	if(first_iteration){
+		Z_last = Z_k;
+		last_measurement_time = input.header.stamp; 
+		first_iteration = false; 
+		return; 
+	}
 
-	std::cout << "Z_k " << Z_k << std::endl; 
+	ros::Duration time_step = input.header.stamp - last_measurement_time;
+
+	Z_k(3) = (Z_k(0) - Z_last(0))/time_step.toSec(); //Velocity x estimate from last measurement || Remember it is scaled with the timestep! 
+	Z_k(4) = (Z_k(1) - Z_last(1))/time_step.toSec();
+	Z_k(5) = (Z_k(2) - Z_last(2))/time_step.toSec();
+
+	std::cout << "The velocities: \n" << Z_k.tail(3) << std::endl;  
+
+	//std::cout << "Z_k " << Z_k << std::endl; 
 
 
 	Y_k = Z_k - H_k*X_priori; 
-	//std::cout << "Y_k: " << Y_k << std::endl;
 	S_k = H_k*P_priori*H_k.transpose() + R_k; 
 	K_k = P_priori*H_k.transpose()*S_k.inverse();
-	std::cout << "The Kalman gain \n " << K_k << std::endl; 
 	X_posteriori = X_priori + K_k*Y_k; 
-	P_posteriori = (I - K_k*H_k)*P_priori;
-	std::cout << "X_posteriori" << X_posteriori << std::endl; 
-	// To fix with time delay go back and forward"
+	P_posteriori = (I - K_k*H_k)*P_priori; 
+
+
+	Z_last = Z_k;
+	last_measurement_time = input.header.stamp; 
 }
 
 void Kalman::publish(){
-	estimate.pose.position.x = X_posteriori(0); 
+	estimate.pose.position.x = X_posteriori(0);
+	estimate.pose.position.y = X_posteriori(3); 
 	estimate.header.stamp=ros::Time::now(); 
 	pub.publish(estimate); 
-
-
 }
 
 
