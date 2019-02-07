@@ -10,7 +10,7 @@
   observation_variance_x: 0.1,
   observation_variance_y: 0.1,
   observation_variance_z: 0.1, 
-  observation_variance_x_dot: 3.0,
+  observation_variance_x_dot: 1.5,
   observation_variance_y_dot: 0.1,
   observation_variance_z_dot: 0.1,
   #Initial error variance 
@@ -30,7 +30,7 @@
   init_y_dot: 0.0, 
   init_z_dot: 0.0, 
   #Observation matrix (x,y,z) only measure x position! 
-  observation_x: 1,
+  observation_x: 0,
   observation_y: 0,
   observation_z: 0, 
   observation_x_vel: 1,

@@ -1,6 +1,8 @@
 #include <ros/ros.h>
 #include "kalman.h"
 #include <iostream>
+#include <tf/tf.h>
+
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "kalman");
@@ -15,9 +17,10 @@ int main(int argc, char** argv) {
 
     filter.printSystem(); 
 
-    ros::Subscriber sub = n.subscribe("/measurement/pose", 1, &Kalman::correction, &filter); 
+    ros::Subscriber sub_velocity = n.subscribe("/measurement/twist", 1, &Kalman::correction, &filter); 
+    ros::Subscriber sub_orientation = n.subscribe("/mavros/local_position/pose",1, &Kalman::updateQuat, &filter);
+   
 
-    
     while(ros::ok()){
         filter.prediction(); 
         ros::spinOnce();
