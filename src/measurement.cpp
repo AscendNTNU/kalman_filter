@@ -19,7 +19,7 @@ int main(int argc, char **argv){
 	while(ros::ok()){
 		measurement.header.stamp=ros::Time::now(); 
 		measurement.twist.linear.x = cos(ros::Time::now().toSec()) + dist(generator);
-		measurement.twist.linear.y = sin(ros::Time::now().toSec()) + dist(generator); 
+		measurement.twist.linear.y = sin(ros::Time::now().toSec()) + dist(generator);
 		pub.publish(measurement); 
 		loop_rate.sleep();
 	}

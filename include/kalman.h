@@ -17,10 +17,11 @@ public:
 	void prediction();
 	void correction(const geometry_msgs::TwistStamped& input); //Callback
 	void publish(); 
-	void updateQuat(const geometry_msgs::PoseStamped& input); //Callback roll, pitch, yaw
+	void updateOrientation(const geometry_msgs::PoseStamped& input); //Callback roll, pitch, yaw
 	
 private:
 	//State estimation 
+	Matrix<float, 3,3> rotation_matrix; 
 	Matrix<float, 3, 1> orientation_rpy; //Orientation given in roll pitch yaw! 
 	Matrix<float, 6, 1> X_priori, B_k; //Predicated state estimate || Control input model
 	Matrix<float,6,6> F_k, F_k_inv, Q_k, P_priori, I;  // State transition model || Covariance process noise 
@@ -37,7 +38,8 @@ private:
 
 	//Publisher! 
 	ros::Publisher pub_position;
-	ros::Publisher pub_velocity;  
+	ros::Publisher pub_velocity;
+	//Estimates 
 	geometry_msgs::PoseStamped pose_estimate;
 	geometry_msgs::TwistStamped twist_estimate; 
 };

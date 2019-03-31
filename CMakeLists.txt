@@ -41,6 +41,4 @@ add_executable(kalman_filter src/main.cpp src/Kalman.cpp)
 target_link_libraries(kalman_filter ${catkin_LIBRARIES})
 target_link_libraries(measurement_publisher ${catkin_LIBRARIES})
 
-
-
 add_dependencies(kalman_filter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -5,7 +5,7 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <ros/ros.h>
 #include <tf/tf.h>
-
+#include <Eigen/Geometry>
 
 Kalman::Kalman(){
 	ros::NodeHandle n;
@@ -73,8 +73,7 @@ Kalman::Kalman(){
 };
 
 
-void Kalman::printSystem(){	
-
+void Kalman::printSystem(){
 	std::cout << "F_k" << std::endl; 
 	std::cout << F_k << std::endl;
 	std::cout << "F_k_inverse" << std::endl; 
@@ -95,22 +94,26 @@ void Kalman::printSystem(){
 
 
 void Kalman::prediction(){
-	X_priori = F_k*X_posteriori; // + B_k U 
+	X_priori = F_k*X_posteriori; //+ B_k U 
 	P_priori = F_k*P_posteriori*F_k.transpose() + Q_k; 
 }
 
 
 //Need one of these for each measurements source, unless they are completly syncronized 
+
+
+
 void Kalman::correction(const geometry_msgs::TwistStamped& input){
 	
 	Z_k << input.twist.linear.y,0,0, input.twist.linear.x, input.twist.linear.y, input.twist.linear.z; //Put the measurement into a vector
-	
+
 	Y_k = Z_k - H_k*X_priori; 
 	S_k = H_k*P_priori*H_k.transpose() + R_k; 
 	K_k = P_priori*H_k.transpose()*S_k.inverse();
 	X_posteriori = X_priori + K_k*Y_k; 
 	P_posteriori = (I - K_k*H_k)*P_priori;
 }
+
 
 void Kalman::publish(){
 
@@ -124,17 +127,20 @@ void Kalman::publish(){
 }
 
 
-void Kalman::updateQuat(const geometry_msgs::PoseStamped& input){
-	static double roll, pitch, yaw; 
-	tf::Quaternion q( 
-		input.pose.orientation.x,
-		input.pose.orientation.y,
-		input.pose.orientation.z,
-		input.pose.orientation.w);
-	tf::Matrix3x3 m(q);
-	m.getRPY(roll, pitch, yaw);
-	orientation_rpy << roll, pitch, yaw; 
+void Kalman::updateOrientation(const geometry_msgs::PoseStamped& input){
+	auto quat = input.pose.orientation;
+	Eigen::Quaternionf q(quat.w, quat.x, quat.y, quat.z); 
+    q.normalize(); 
+    rotation_matrix = q.toRotationMatrix(); 
+    orientation_rpy = rotation_matrix.eulerAngles(0,1,2);
 }
+
+
+
+
+
+
+
 
 
 
