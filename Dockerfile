@@ -2,7 +2,7 @@ FROM ros:kinetic-ros-base
 MAINTAINER Ascend NTNU "www.ascendntnu.no"
 
 ENV ROS_WORKSPACE_PATH=/opt/catkin_workspace
-ENV ROS_PACKAGE_NAME=YOUR_PACKAGE_NAME
+ENV ROS_PACKAGE_NAME=kalman_filter
 
 RUN apt-get update -qq && apt-get install -yqq \
     build-essential \
