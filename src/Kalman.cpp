@@ -10,7 +10,7 @@
 Kalman::Kalman(){
 	ros::NodeHandle n;
 	
-	pub_position = n.advertise<geometry_msgs::PoseStamped>("/estimation/pose", 100);
+	pub_position = n.advertise<geometry_msgs::PoseStamped>("/mavros/vision_pose/pose", 100);
 	pub_velocity = n.advertise<geometry_msgs::TwistStamped>("/estimation/twist", 100);
 
 	int freq;
@@ -52,9 +52,9 @@ Kalman::Kalman(){
 	n.getParam("/kalman_filter/observation_variance_x", R_k(0,0)); 
 	n.getParam("/kalman_filter/observation_variance_y", R_k(1,1)); 
 	n.getParam("/kalman_filter/observation_variance_z", R_k(2,2)); 
-	n.getParam("/kalman_filter/observation_variance_x_dot", R_k(3,3)); 
-	n.getParam("/kalman_filter/observation_variance_y_dot", R_k(4,4)); 
-	n.getParam("/kalman_filter/observation_variance_z_dot", R_k(5,5)); 
+	//n.getParam("/kalman_filter/observation_variance_x_dot", R_k(3,3)); 
+	//n.getParam("/kalman_filter/observation_variance_y_dot", R_k(4,4)); 
+	//n.getParam("/kalman_filter/observation_variance_z_dot", R_k(5,5)); 
 	//Setting the inital state of the system
 
 	n.getParam("/kalman_filter/init_x", X_posteriori(0)); 
@@ -67,9 +67,9 @@ Kalman::Kalman(){
 	n.getParam("/kalman_filter/observation_x", H_k(0,0));
 	n.getParam("/kalman_filter/observation_y", H_k(1,1));
 	n.getParam("/kalman_filter/observation_z", H_k(2,2));
-	n.getParam("/kalman_filter/observation_x_vel", H_k(3,3));
-	n.getParam("/kalman_filter/observation_x_vel", H_k(4,4));
-	n.getParam("/kalman_filter/observation_x_vel", H_k(5,5));
+	//n.getParam("/kalman_filter/observation_x_vel", H_k(3,3));
+	//n.getParam("/kalman_filter/observation_x_vel", H_k(4,4));
+	//n.getParam("/kalman_filter/observation_x_vel", H_k(5,5));
 };
 
 
@@ -96,17 +96,15 @@ void Kalman::printSystem(){
 void Kalman::prediction(){
 	X_priori = F_k*X_posteriori; //+ B_k U 
 	P_priori = F_k*P_posteriori*F_k.transpose() + Q_k; 
+
+	P_posteriori = P_priori; // This is nescessary if the positon data is stopped for whatever reason
 }
 
 
-//Need one of these for each measurements source, unless they are completly syncronized 
-
-
-
-void Kalman::correction(const geometry_msgs::TwistStamped& input){
+void Kalman::correction(const geometry_msgs::PoseStamped& input){
 	
-	Z_k << input.twist.linear.y,0,0, input.twist.linear.x, input.twist.linear.y, input.twist.linear.z; //Put the measurement into a vector
-
+	Z_k << input.pose.position.x, input.pose.position.y, input.pose.position.z; 
+	
 	Y_k = Z_k - H_k*X_priori; 
 	S_k = H_k*P_priori*H_k.transpose() + R_k; 
 	K_k = P_priori*H_k.transpose()*S_k.inverse();
@@ -116,14 +114,19 @@ void Kalman::correction(const geometry_msgs::TwistStamped& input){
 
 
 void Kalman::publish(){
-
+	
 	pose_estimate.pose.position.x = X_posteriori(0);
+	pose_estimate.pose.position.y = X_posteriori(1);
+	pose_estimate.pose.position.y = X_posteriori(2);
 	pose_estimate.header.stamp = ros::Time::now(); 
 	
 	twist_estimate.twist.linear.x = X_posteriori(3);
+	twist_estimate.twist.linear.y = X_posteriori(4);
+	twist_estimate.twist.linear.z = X_posteriori(5); 
 	twist_estimate.header.stamp = ros::Time::now();
 
 	pub_position.publish(pose_estimate);
+	//pub_velocity.publish(twist_estimate); 
 }
 
 
