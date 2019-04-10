@@ -16,11 +16,9 @@ int main(int argc, char **argv){
 	std::default_random_engine generator;
     std::normal_distribution<double> dist(0.0, 0.1);
 
-	measurement.pose.position.x = cos(ros::Time::now().toSec());
 	while(ros::ok()){
 		measurement.header.stamp=ros::Time::now(); 
 		measurement.pose.position.x = cos(ros::Time::now().toSec()) + dist(generator);
-		measurement.pose.position.y = -sin(ros::Time::now().toSec());
 		pub.publish(measurement); 
 		loop_rate.sleep();
 	}

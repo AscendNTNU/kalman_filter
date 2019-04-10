@@ -1,6 +1,8 @@
 #include <ros/ros.h>
 #include "kalman.h"
 #include <iostream>
+#include <tf/tf.h>
+#include <Eigen/Geometry>
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "kalman");
@@ -10,14 +12,11 @@ int main(int argc, char** argv) {
     n.getParam("/kalman_filter/prediction_freq", frequency); 
     ros::Rate rate(30); 
     
-    std::cout << "Freq: " << frequency << " Hz" << std::endl; 
     Kalman filter; 
 
     filter.printSystem(); 
 
-    ros::Subscriber sub = n.subscribe("/measurement/pose", 1, &Kalman::correction, &filter); 
-
-    
+    ros::Subscriber sub_pose = n.subscribe("mavros/mocap/pose", 1, &Kalman::correction, &filter); 
     while(ros::ok()){
         filter.prediction(); 
         ros::spinOnce();
