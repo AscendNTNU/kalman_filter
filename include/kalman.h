@@ -35,8 +35,9 @@ private:
 
 	Matrix<float,3,3> R_k, S_k; 
 	Matrix<float,3,6> H_k; 
-	Matrix<float,3,1> Y_k, Z_k; 
+	Matrix<float,3,1> Y_k, Z_k;
 	//First iteration 
+	Matrix<float,4,1> q; // quaternion
 	bool first_iteration; 
 	ros::Time last_measurement_time; 
 

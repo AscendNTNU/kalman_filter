@@ -105,11 +105,14 @@ void Kalman::correction(const geometry_msgs::PoseStamped& input){
 	
 	Z_k << input.pose.position.x, input.pose.position.y, input.pose.position.z; 
 	
+	q << input.pose.orientation.w, input.pose.orientation.x, input.pose.orientation.y, input.pose.orientation.z; 
+
 	Y_k = Z_k - H_k*X_priori; 
 	S_k = H_k*P_priori*H_k.transpose() + R_k; 
 	K_k = P_priori*H_k.transpose()*S_k.inverse();
 	X_posteriori = X_priori + K_k*Y_k; 
 	P_posteriori = (I - K_k*H_k)*P_priori;
+
 }
 
 
@@ -117,8 +120,14 @@ void Kalman::publish(){
 	
 	pose_estimate.pose.position.x = X_posteriori(0);
 	pose_estimate.pose.position.y = X_posteriori(1);
-	pose_estimate.pose.position.y = X_posteriori(2);
-	pose_estimate.header.stamp = ros::Time::now(); 
+	pose_estimate.pose.position.z = X_posteriori(2);
+	pose_estimate.header.stamp = ros::Time::now();
+
+	pose_estimate.pose.orientation.w = q(0);
+	pose_estimate.pose.orientation.x = q(1);
+	pose_estimate.pose.orientation.y = q(2);
+	pose_estimate.pose.orientation.z = q(3); 
+
 	
 	twist_estimate.twist.linear.x = X_posteriori(3);
 	twist_estimate.twist.linear.y = X_posteriori(4);
