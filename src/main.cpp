@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
     int frequency; 
-    n.getParam("/kalman_filter/prediction_freq", frequency); 
+    n.getParam("kalman_filter/prediction_freq", frequency); 
     ros::Rate rate(30); 
     
     Kalman filter; 
