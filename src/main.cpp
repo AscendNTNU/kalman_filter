@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
     filter.printSystem(); 
 
-    ros::Subscriber sub_pose = n.subscribe("mavros/mocap/pose", 1, &Kalman::correction, &filter); 
+    ros::Subscriber sub_pose = n.subscribe("orb/pose", 1, &Kalman::correction, &filter); 
     while(ros::ok()){
         filter.prediction(); 
         ros::spinOnce();
