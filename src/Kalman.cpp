@@ -128,11 +128,13 @@ void Kalman::publish(){
 	pose_estimate.pose.orientation.y = q(2);
 	pose_estimate.pose.orientation.z = q(3); 
 
+	pose_estimate.header.frame_id = "map"; 
 	
 	twist_estimate.twist.linear.x = X_posteriori(3);
 	twist_estimate.twist.linear.y = X_posteriori(4);
 	twist_estimate.twist.linear.z = X_posteriori(5); 
 	twist_estimate.header.stamp = ros::Time::now();
+	twist_estimate.header.frame_id = "map";
 
 	pub_position.publish(pose_estimate);
 	//pub_velocity.publish(twist_estimate); 
