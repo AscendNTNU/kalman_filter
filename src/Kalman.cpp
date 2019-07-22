@@ -10,11 +10,11 @@
 Kalman::Kalman(){
 	ros::NodeHandle n;
 	
-	pub_position = n.advertise<geometry_msgs::PoseStamped>("/mavros/vision_pose/pose", 100);
-	pub_velocity = n.advertise<geometry_msgs::TwistStamped>("/estimation/twist", 100);
+	pub_position = n.advertise<geometry_msgs::PoseStamped>("mavros/vision_pose/pose", 100);
+	pub_velocity = n.advertise<geometry_msgs::TwistStamped>("estimation/twist", 100);
 
 	int freq;
-	n.getParam("/kalman_filter/prediction_freq", freq); 
+	n.getParam("kalman_filter/prediction_freq", freq); 
 	float stepSize = 1.0/freq; 
 
 	first_iteration = true; 
@@ -35,41 +35,41 @@ Kalman::Kalman(){
 	I.setIdentity();
 
 	//Load parameters from rosparam 
-	n.getParam("/kalman_filter/error_variance_x", P_posteriori(0,0)); 
-	n.getParam("/kalman_filter/error_variance_y", P_posteriori(1,1)); 
-	n.getParam("/kalman_filter/error_variance_z", P_posteriori(2,2)); 
-	n.getParam("/kalman_filter/error_variance_x_dot", P_posteriori(3,3)); 
-	n.getParam("/kalman_filter/error_variance_y_dot", P_posteriori(4,4)); 
-	n.getParam("/kalman_filter/error_variance_z_dot", P_posteriori(5,5)); 
+	n.getParam("kalman_filter/error_variance_x", P_posteriori(0,0)); 
+	n.getParam("kalman_filter/error_variance_y", P_posteriori(1,1)); 
+	n.getParam("kalman_filter/error_variance_z", P_posteriori(2,2)); 
+	n.getParam("kalman_filter/error_variance_x_dot", P_posteriori(3,3)); 
+	n.getParam("kalman_filter/error_variance_y_dot", P_posteriori(4,4)); 
+	n.getParam("kalman_filter/error_variance_z_dot", P_posteriori(5,5)); 
 
-	n.getParam("/kalman_filter/prosess_variance_x", Q_k(0,0)); 
-	n.getParam("/kalman_filter/prosess_variance_y", Q_k(1,1)); 
-	n.getParam("/kalman_filter/prosess_variance_z", Q_k(2,2)); 
-	n.getParam("/kalman_filter/prosess_variance_x_dot", Q_k(3,3)); 
-	n.getParam("/kalman_filter/prosess_variance_y_dot", Q_k(4,4)); 
-	n.getParam("/kalman_filter/prosess_variance_z_dot", Q_k(5,5)); 
+	n.getParam("kalman_filter/prosess_variance_x", Q_k(0,0)); 
+	n.getParam("kalman_filter/prosess_variance_y", Q_k(1,1)); 
+	n.getParam("kalman_filter/prosess_variance_z", Q_k(2,2)); 
+	n.getParam("kalman_filter/prosess_variance_x_dot", Q_k(3,3)); 
+	n.getParam("kalman_filter/prosess_variance_y_dot", Q_k(4,4)); 
+	n.getParam("kalman_filter/prosess_variance_z_dot", Q_k(5,5)); 
 	//Variance of the measurements
-	n.getParam("/kalman_filter/observation_variance_x", R_k(0,0)); 
-	n.getParam("/kalman_filter/observation_variance_y", R_k(1,1)); 
-	n.getParam("/kalman_filter/observation_variance_z", R_k(2,2)); 
-	//n.getParam("/kalman_filter/observation_variance_x_dot", R_k(3,3)); 
-	//n.getParam("/kalman_filter/observation_variance_y_dot", R_k(4,4)); 
-	//n.getParam("/kalman_filter/observation_variance_z_dot", R_k(5,5)); 
+	n.getParam("kalman_filter/observation_variance_x", R_k(0,0)); 
+	n.getParam("kalman_filter/observation_variance_y", R_k(1,1)); 
+	n.getParam("kalman_filter/observation_variance_z", R_k(2,2)); 
+	//n.getParam("kalman_filter/observation_variance_x_dot", R_k(3,3)); 
+	//n.getParam("kalman_filter/observation_variance_y_dot", R_k(4,4)); 
+	//n.getParam("kalman_filter/observation_variance_z_dot", R_k(5,5)); 
 	//Setting the inital state of the system
 
-	n.getParam("/kalman_filter/init_x", X_posteriori(0)); 
-	n.getParam("/kalman_filter/init_y", X_posteriori(1)); 
-	n.getParam("/kalman_filter/init_z", X_posteriori(2)); 
-	n.getParam("/kalman_filter/init_x_dot", X_posteriori(3)); 
-	n.getParam("/kalman_filter/init_y_dot", X_posteriori(4)); 
-	n.getParam("/kalman_filter/init_z_dot", X_posteriori(5)); 
+	n.getParam("kalman_filter/init_x", X_posteriori(0)); 
+	n.getParam("kalman_filter/init_y", X_posteriori(1)); 
+	n.getParam("kalman_filter/init_z", X_posteriori(2)); 
+	n.getParam("kalman_filter/init_x_dot", X_posteriori(3)); 
+	n.getParam("kalman_filter/init_y_dot", X_posteriori(4)); 
+	n.getParam("kalman_filter/init_z_dot", X_posteriori(5)); 
 	//Setting which states that are measured
-	n.getParam("/kalman_filter/observation_x", H_k(0,0));
-	n.getParam("/kalman_filter/observation_y", H_k(1,1));
-	n.getParam("/kalman_filter/observation_z", H_k(2,2));
-	//n.getParam("/kalman_filter/observation_x_vel", H_k(3,3));
-	//n.getParam("/kalman_filter/observation_x_vel", H_k(4,4));
-	//n.getParam("/kalman_filter/observation_x_vel", H_k(5,5));
+	n.getParam("kalman_filter/observation_x", H_k(0,0));
+	n.getParam("kalman_filter/observation_y", H_k(1,1));
+	n.getParam("kalman_filter/observation_z", H_k(2,2));
+	//n.getParam("kalman_filter/observation_x_vel", H_k(3,3));
+	//n.getParam("kalman_filter/observation_x_vel", H_k(4,4));
+	//n.getParam("kalman_filter/observation_x_vel", H_k(5,5));
 };
 
 

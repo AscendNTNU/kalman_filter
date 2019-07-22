@@ -9,14 +9,14 @@ int main(int argc, char** argv) {
     ros::NodeHandle n;
 
     int frequency; 
-    n.getParam("/kalman_filter/prediction_freq", frequency); 
+    n.getParam("kalman_filter/prediction_freq", frequency); 
     ros::Rate rate(30); 
     
     Kalman filter; 
 
     filter.printSystem(); 
 
-    ros::Subscriber sub_pose = n.subscribe("mavros/mocap/pose", 1, &Kalman::correction, &filter); 
+    ros::Subscriber sub_pose = n.subscribe("orb/pose", 1, &Kalman::correction, &filter); 
     while(ros::ok()){
         filter.prediction(); 
         ros::spinOnce();
