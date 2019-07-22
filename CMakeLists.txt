@@ -35,12 +35,10 @@ include_directories(include
     ${Eigen_INCLUDE_DIRS}
 )
 
+add_executable(measurement_publisher src/measurement.cpp)
+add_executable(kalman_filter src/main.cpp src/Kalman.cpp)
 
-add_executable(test_kalman src/main.cpp src/Kalman.cpp)
+target_link_libraries(kalman_filter ${catkin_LIBRARIES})
+target_link_libraries(measurement_publisher ${catkin_LIBRARIES})
 
-target_link_libraries(test_kalman ${catkin_LIBRARIES})
-
-
-
-
-add_dependencies(test_kalman ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(kalman_filter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
